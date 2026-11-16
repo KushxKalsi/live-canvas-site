@@ -236,7 +236,7 @@ const ACT = {
  */
 const SCENES = [
   {
-    id: 'hero', name: 'Hero', rest: .785, build: 6800,
+    id: 'hero', name: 'Hero', rest: .785, build: 4400,
     from: { Maya: [430, 585], Leo: [800, 300], Ines: [930, 560], Kai: [330, 280] },
     exit: { a: .8, b: .95, to: { Maya: [300, 940], Leo: [720, 960], Ines: [1020, 940], Kai: [520, 980] } },
     steps: [
@@ -265,7 +265,7 @@ const SCENES = [
     ],
   },
   {
-    id: 'features', name: 'Why Driftwood', rest: .815, build: 6600,
+    id: 'features', name: 'Why Driftwood', rest: .815, build: 4300,
     from: { Maya: [300, -150], Leo: [640, -170], Ines: [980, -150], Kai: [500, -210] },
     exit: { a: .82, b: .96, to: { Maya: [260, 950], Leo: [640, 970], Ines: [1040, 950], Kai: [450, 990] } },
     steps: [
@@ -292,7 +292,7 @@ const SCENES = [
     ],
   },
   {
-    id: 'gallery', name: 'Journeys', rest: .79, build: 6400,
+    id: 'gallery', name: 'Journeys', rest: .79, build: 4200,
     from: { Maya: [200, -150], Leo: [700, -150], Ines: [1100, -150], Kai: [450, -200] },
     exit: { a: .82, b: .96, to: { Maya: [300, 950], Leo: [760, 960], Ines: [1060, 950], Kai: [520, 990] } },
     steps: [
@@ -316,7 +316,7 @@ const SCENES = [
     ],
   },
   {
-    id: 'story', name: 'Stories', rest: .765, build: 6000,
+    id: 'story', name: 'Stories', rest: .765, build: 3900,
     from: { Maya: [250, -150], Leo: [900, -150], Ines: [600, -180], Kai: [1100, -160] },
     exit: { a: .8, b: .95, to: { Maya: [280, 950], Leo: [760, 960], Ines: [520, 980], Kai: [1040, 950] } },
     steps: [
@@ -342,7 +342,7 @@ const SCENES = [
     ],
   },
   {
-    id: 'launch', name: 'Newsletter', rest: .93, build: 7600,
+    id: 'launch', name: 'Newsletter', rest: .93, build: 5000,
     from: { Maya: [300, -150], Leo: [800, -150], Ines: [1000, -180], Kai: [550, -200] },
     steps: [
       ['Maya', 'draw', 'launch-frame', .02, .11],
@@ -775,10 +775,12 @@ function layout() {
   layout.done = true;
   const L = ui.panelL.offsetWidth || 0;
   const R = ui.panelR.offsetWidth || 0;
-  const T = 48, pad = vw < 760 ? 6 : 26, padB = vw < 760 ? 58 : pad;
-  const aw = vw - L - R - pad * 2, ah = vh - T - pad - padB;
-  S = Math.min(aw / W, ah / H); INV = 1 / S;
-  const ox = L + pad + (aw - W * S) / 2, oy = T + pad + (ah - H * S) / 2;
+  // zoom to the website frame (plus its label / publish row), not the whole canvas
+  const V = MOBILE ? { x: 8, y: 2, w: 384, h: 806 } : { x: 28, y: 14, w: 1224, h: 752 };
+  const T = 48, pad = vw < 760 ? 4 : 10;
+  const aw = vw - L - R - pad * 2, ah = vh - T - pad * 2;
+  S = Math.min(aw / V.w, ah / V.h); INV = 1 / S;
+  const ox = L + pad + (aw - V.w * S) / 2 - V.x * S, oy = T + pad + (ah - V.h * S) / 2 - V.y * S;
   for (const sc of scenes) {
     sc.canvas.style.transform = `translate(${ox.toFixed(1)}px,${oy.toFixed(1)}px) scale(${S.toFixed(5)})`;
     sc.canvas.style.setProperty('--inv', INV.toFixed(4));
@@ -817,14 +819,14 @@ function playTo(i, mode) {
   if (REDUCED) legs.push({ y0, y1: to.y, dur: 1, e: t => t });
   else if (mode === 'step' && to.sc) {
     const top = to.sc.top;
-    if (y0 < top - 2) legs.push({ y0, y1: top, dur: 1100, e: ease });
+    if (y0 < top - 2) legs.push({ y0, y1: top, dur: 750, e: ease });
     const from = Math.max(y0, top);
     legs.push({ y0: from, y1: to.y, dur: to.sc.buildMs * clamp((to.y - from) / Math.max(1, to.y - top), .15, 1), e: easeSine });
   } else if (mode === 'step') {
-    legs.push({ y0, y1: to.y, dur: 1300, e: ease });
+    legs.push({ y0, y1: to.y, dur: 950, e: ease });
   } else {
     const hops = Math.max(1, Math.abs(i - nearestStop(y0)));
-    legs.push({ y0, y1: to.y, dur: clamp(700 + 650 * hops, 1100, 3400), e: ease });
+    legs.push({ y0, y1: to.y, dur: clamp(500 + 500 * hops, 900, 2800), e: ease });
   }
   D.tw = { legs, li: 0, t: 0, i, dir, y: y0 };
   D.rate = 1;

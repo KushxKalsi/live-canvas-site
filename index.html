@@ -27,7 +27,15 @@
       <span class="tool" data-tool="comment" title="Comment"><svg viewBox="0 0 24 24"><path d="M20 11.5a7.5 7.5 0 0 1-10.9 6.7L4 19.5l1.4-4.6A7.5 7.5 0 1 1 20 11.5z"/></svg></span>
     </div>
   </div>
-  <div class="tb-center"><span class="muted">Drafts /</span> <b>Driftwood — Landing page</b> <span class="muted">v3</span></div>
+  <div class="tb-center">
+    <div class="status" id="status">
+      <button class="sbtn" id="nav-prev" type="button" aria-label="Previous section">↑</button>
+      <span class="sdot"></span>
+      <span id="status-t" aria-live="polite">Scroll once to start</span>
+      <span class="sbar"><i id="status-bar"></i></span>
+      <button class="sbtn next" id="nav-next" type="button" aria-label="Next section">↓</button>
+    </div>
+  </div>
   <div class="tb-right">
     <div class="avs" id="avs"></div>
     <span class="share">Share</span>
@@ -60,13 +68,6 @@
     <div class="grid2"><div class="fld"><span>Size</span><b id="pn-size">–</b></div><div class="fld"><span>Line</span><b id="pn-lh">–</b></div></div></div>
 </aside>
 
-<div class="status" id="status">
-  <button class="sbtn" id="nav-prev" type="button" aria-label="Previous section">↑</button>
-  <span class="sdot"></span>
-  <span id="status-t" aria-live="polite">Scroll once to start</span>
-  <span class="sbar"><i id="status-bar"></i></span>
-  <button class="sbtn next" id="nav-next" type="button" aria-label="Next section">↓</button>
-</div>
 <div class="toast" id="toast"><span class="ok">✓</span> <span id="toast-t">Published · <b>driftwood.site</b> is live</span></div>
 <canvas id="confetti" aria-hidden="true"></canvas>
 
