@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Driftwood — built live</title>
+<meta name="description" content="A landing page that builds itself as you scroll, assembled by four multiplayer cursors on a design canvas — then works like a real site.">
+<!-- fonts are embedded as data URIs so they load offline, even from file:// -->
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ============ EDITOR CHROME ============ -->
+<header class="topbar">
+  <div class="tb-left">
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="20" height="20"><rect x="3" y="3" width="8" height="8" rx="4" fill="#F24E1E"/><rect x="13" y="3" width="8" height="8" rx="2" fill="#0D99FF"/><rect x="3" y="13" width="8" height="8" rx="2" fill="#14AE5C"/><rect x="13" y="13" width="8" height="8" rx="4" fill="#9747FF"/></svg>
+    </div>
+    <div class="tools" id="tools">
+      <span class="tool on" data-tool="move" title="Move"><svg viewBox="0 0 24 24"><path d="M5 3.5l13 5.2-5.6 2-2 5.6z"/></svg></span>
+      <span class="tool" data-tool="frame" title="Frame"><svg viewBox="0 0 24 24"><path d="M7.5 3v18M16.5 3v18M3 7.5h18M3 16.5h18"/></svg></span>
+      <span class="tool" data-tool="rect" title="Rectangle"><svg viewBox="0 0 24 24"><rect x="4.5" y="4.5" width="15" height="15" rx="1.5"/></svg></span>
+      <span class="tool" data-tool="pen" title="Pen"><svg viewBox="0 0 24 24"><path d="M12 3.5l6.5 7-5.5 8.5h-2L5.5 10.5z"/><circle cx="12" cy="11" r="1.4"/></svg></span>
+      <span class="tool" data-tool="text" title="Text"><svg viewBox="0 0 24 24"><path d="M5 5.5h14M12 5.5v13"/></svg></span>
+      <span class="tool" data-tool="image" title="Image"><svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M20.5 16l-5-5-9 8.5"/></svg></span>
+      <span class="tool" data-tool="comment" title="Comment"><svg viewBox="0 0 24 24"><path d="M20 11.5a7.5 7.5 0 0 1-10.9 6.7L4 19.5l1.4-4.6A7.5 7.5 0 1 1 20 11.5z"/></svg></span>
+    </div>
+  </div>
+  <div class="tb-center"><span class="muted">Drafts /</span> <b>Driftwood — Landing page</b> <span class="muted">v3</span></div>
+  <div class="tb-right">
+    <div class="avs" id="avs"></div>
+    <span class="share">Share</span>
+    <span class="zoom" id="zoom">100%</span>
+  </div>
+</header>
+
+<aside class="panel left">
+  <div class="ph"><span class="tab on">Layers</span><span class="tab">Assets</span></div>
+  <div class="psec-h">Frames</div>
+  <div class="frames" id="frames"></div>
+  <div class="psec-h">Layers <span class="muted" id="layers-of"></span></div>
+  <div class="layers" id="layers"></div>
+</aside>
+
+<aside class="panel right">
+  <div class="ph"><span class="tab on">Design</span><span class="tab">Prototype</span></div>
+  <div class="rsec">
+    <div class="sel-name"><span class="kic" id="pn-ic"></span><b id="pn-name">Nothing selected</b></div>
+    <div class="editing" id="pn-edit"></div>
+  </div>
+  <div class="rsec"><div class="lbl">Position</div>
+    <div class="grid2"><div class="fld"><span>X</span><b id="pn-x">–</b></div><div class="fld"><span>Y</span><b id="pn-y">–</b></div></div></div>
+  <div class="rsec"><div class="lbl">Layout</div>
+    <div class="grid2"><div class="fld"><span>W</span><b id="pn-w">–</b></div><div class="fld"><span>H</span><b id="pn-h">–</b></div></div></div>
+  <div class="rsec"><div class="lbl">Fill</div>
+    <div class="fillrow"><i id="pn-sw"></i><b id="pn-fill">–</b><span class="muted">100%</span></div></div>
+  <div class="rsec" id="pn-type"><div class="lbl">Typography</div>
+    <div class="fld wide"><b id="pn-font">–</b></div>
+    <div class="grid2"><div class="fld"><span>Size</span><b id="pn-size">–</b></div><div class="fld"><span>Line</span><b id="pn-lh">–</b></div></div></div>
+</aside>
+
+<div class="status" id="status">
+  <button class="sbtn" id="nav-prev" type="button" aria-label="Previous section">↑</button>
+  <span class="sdot"></span>
+  <span id="status-t" aria-live="polite">Scroll once to start</span>
+  <span class="sbar"><i id="status-bar"></i></span>
+  <button class="sbtn next" id="nav-next" type="button" aria-label="Next section">↓</button>
+</div>
+<div class="toast" id="toast"><span class="ok">✓</span> <span id="toast-t">Published · <b>driftwood.site</b> is live</span></div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<!-- ============ 01 HERO ============ -->
+<section class="scene" id="hero" style="--h:420vh">
+  <div class="stage">
+    <div class="canvas">
+      <div class="hint" id="hero-hint">
+        <div class="hint-k">Four designers. One empty canvas.</div>
+        <div class="hint-t">Scroll once — watch them build a website</div>
+        <div class="mouse"><span></span></div>
+      </div>
+      <div class="frame-label">Hero — Desktop</div>
+      <div class="frame" id="hero-frame" data-layer="Hero" data-kind="frame" style="left:40px;top:56px;width:1200px;height:700px;background:#F6F1E9" data-m="left:12px;top:44px;width:376px;height:760px">
+        <div class="t serif" id="h-logo" data-layer="Logo" data-kind="text" data-x="go:hero" data-text="driftwood." style="left:56px;top:30px;font-size:32px;color:#1F2A24" data-m="left:20px;top:20px;font-size:26px"></div>
+        <div class="t" id="h-nav" data-layer="Nav links" data-kind="text" data-text="[Why Driftwood](go:features)      [Journeys](go:gallery)      [Stories](go:story)      [Letters](go:launch)" data-mtext="[Why Driftwood](go:features)   [Journeys](go:gallery)   [Stories](go:story)   [Letters](go:launch)" style="left:420px;top:44px;font-size:15px;font-weight:500;color:#3D4A42" data-m="left:20px;top:76px;font-size:12.5px"></div>
+        <div class="rect btn" id="h-navbtn" data-layer="Button / Nav" data-kind="rect" data-x="open:plan" style="left:1010px;top:30px;width:134px;height:46px;border-radius:23px" data-m="left:238px;top:16px;width:118px;height:40px">
+          <i class="fill" style="background:#1F2A24"></i>
+          <div class="t lbl" id="h-navbtn-t" data-layer="Label" data-kind="text" data-text="Plan a trip" style="font-size:14px;font-weight:600;color:#F6F1E9" data-m="font-size:13px"></div>
+        </div>
+        <div class="t serif" id="h-title" data-layer="Headline" data-kind="text" data-text="Slow travel,|beautifully|_planned._" style="left:52px;top:122px;font-size:96px;line-height:.95;color:#1F2A24" data-m="left:18px;top:110px;font-size:58px"></div>
+        <div class="t" id="h-sub" data-layer="Subheading" data-kind="text" data-text="Hand-picked cabins, quiet trails and slow trains —|stitched into journeys that feel like your own." data-mtext="Hand-picked cabins, quiet trails and|slow trains — stitched into journeys|that feel like your own." style="left:58px;top:428px;font-size:18px;line-height:1.6;color:#55625A" data-m="left:20px;top:288px;font-size:14px;line-height:1.55"></div>
+        <div class="rect btn" id="h-cta" data-layer="Button / Primary" data-kind="rect" data-x="go:gallery" style="left:58px;top:520px;width:212px;height:58px;border-radius:29px" data-m="left:20px;top:372px;width:178px;height:50px;border-radius:25px">
+          <i class="fill" style="background:#D2693C"></i>
+          <div class="t lbl" id="h-cta-t" data-layer="Label" data-kind="text" data-text="Start exploring  →" style="font-size:15px;font-weight:600;color:#fff" data-m="font-size:14px"></div>
+        </div>
+        <div class="btn outline" id="h-sec" data-layer="Button / Secondary" data-kind="rect" data-x="open:film" style="left:284px;top:520px;width:164px;height:58px;border-radius:29px" data-m="left:208px;top:372px;width:148px;height:50px;border-radius:25px">
+          <div class="t lbl" id="h-sec-t" data-layer="Label" data-kind="text" data-text="▶  Watch film" style="font-size:15px;font-weight:600;color:#1F2A24" data-m="font-size:14px"></div>
+        </div>
+        <div class="t" id="h-rating" data-layer="Social proof" data-kind="text" data-text="★★★★★   4.9 · loved by 12,000 slow travellers" data-mtext="★★★★★  4.9 · loved by 12,000 travellers" style="left:58px;top:618px;font-size:14px;color:#55625A" data-m="left:20px;top:438px;font-size:12.5px"></div>
+        <div class="slot" id="h-img" data-layer="cabin-fjord.jpg" data-kind="image" data-x="open:film" style="left:640px;top:104px;width:500px;height:540px;border-radius:28px" data-m="left:20px;top:472px;width:336px;height:268px;border-radius:22px">
+          <div class="img"><img src="img/fjord.jpg" alt="A fjord seen from a cliff top, deep blue water between steep hills"></div>
+        </div>
+        <div class="floatcard" id="h-card" data-layer="Card / Departure" data-kind="rect" data-x="open:trip:0" style="left:560px;top:540px;width:272px;height:92px" data-m="left:34px;top:654px;width:240px;height:74px">
+          <div class="fc-thumb"><img src="img/lake.jpg" alt=""></div>
+          <div class="fc-k">NEXT DEPARTURE</div>
+          <div class="fc-v serif">Lofoten · 12 March</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 FEATURES ============ -->
+<section class="scene" id="features" style="--h:400vh">
+  <div class="stage">
+    <div class="canvas">
+      <div class="frame-label">Why Driftwood — Desktop</div>
+      <div class="frame" id="feat-frame" data-layer="Why Driftwood" data-kind="frame" style="left:40px;top:56px;width:1200px;height:700px;background:#FBF8F3" data-m="left:12px;top:44px;width:376px;height:760px">
+        <div class="t" id="f-eye" data-layer="Eyebrow" data-kind="text" data-text="WHY DRIFTWOOD" style="left:80px;top:72px;font-size:13px;font-weight:600;letter-spacing:.18em;color:#D2693C" data-m="left:20px;top:26px;font-size:11px"></div>
+        <div class="t serif" id="f-title" data-layer="Section title" data-kind="text" data-text="Fewer places.|More _presence._" style="left:78px;top:100px;font-size:72px;line-height:1;color:#1F2A24" data-m="left:18px;top:46px;font-size:44px"></div>
+        <div class="t" id="f-para" data-layer="Intro" data-kind="text" data-text="We plan less so you notice more. Every|journey is built around three quiet promises." data-mtext="We plan less so you notice more. Every|journey keeps three quiet promises." style="left:700px;top:128px;font-size:17px;line-height:1.6;color:#55625A" data-m="left:20px;top:146px;font-size:13.5px"></div>
+
+        <div class="card" id="f-c1" data-layer="Card / Routes" data-kind="rect" data-x="open:info:routes" style="left:80px;top:290px;width:335px;height:350px" data-m="left:20px;top:206px;width:336px;height:172px">
+          <i class="fill" style="background:#1F2A24"></i>
+          <div class="icon" id="f-i1" data-layer="Icon" data-kind="rect" style="left:30px;top:30px;background:#F6DFCF;color:#C45A2E" data-m="left:20px;top:20px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="2.2"/><circle cx="18" cy="5" r="2.2"/><path d="M8.2 19H15a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h6.8"/></svg></div>
+          <span class="cnum">01</span>
+          <div class="t serif ct" id="f-t1" data-layer="Title" data-kind="text" data-text="Unhurried routes" style="left:30px;top:122px;font-size:32px" data-m="left:84px;top:28px;font-size:25px"></div>
+          <div class="t cb" id="f-b1" data-layer="Body" data-kind="text" data-text="Two nights minimum, everywhere.|Trains over planes when we can.|Time to actually arrive." style="left:30px;top:176px;font-size:15.5px;line-height:1.7" data-m="left:20px;top:82px;font-size:13.5px;line-height:1.6"></div>
+          <span class="more">Read more →</span>
+        </div>
+        <div class="card" id="f-c2" data-layer="Card / Hosts" data-kind="rect" data-x="open:info:hosts" style="left:432px;top:290px;width:335px;height:350px" data-m="left:20px;top:390px;width:336px;height:172px">
+          <i class="fill" style="background:#1F2A24"></i>
+          <div class="icon" id="f-i2" data-layer="Icon" data-kind="rect" style="left:30px;top:30px;background:#DCE6DA;color:#4F6E5A" data-m="left:20px;top:20px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1z"/></svg></div>
+          <span class="cnum">02</span>
+          <div class="t serif ct" id="f-t2" data-layer="Title" data-kind="text" data-text="Hosts, not hotels" style="left:30px;top:122px;font-size:32px" data-m="left:84px;top:28px;font-size:25px"></div>
+          <div class="t cb" id="f-b2" data-layer="Body" data-kind="text" data-text="Small cabins and family-run|guesthouses we’ve stayed in|ourselves — every single one." style="left:30px;top:176px;font-size:15.5px;line-height:1.7" data-m="left:20px;top:82px;font-size:13.5px;line-height:1.6"></div>
+          <span class="more">Read more →</span>
+        </div>
+        <div class="card" id="f-c3" data-layer="Card / Concierge" data-kind="rect" data-x="open:info:concierge" style="left:784px;top:290px;width:335px;height:350px" data-m="left:20px;top:574px;width:336px;height:172px">
+          <i class="fill" style="background:#1F2A24"></i>
+          <div class="icon" id="f-i3" data-layer="Icon" data-kind="rect" style="left:30px;top:30px;background:#E4E2F2;color:#6457A6" data-m="left:20px;top:20px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11.5a7.5 7.5 0 0 1-10.9 6.7L4 19.5l1.4-4.6A7.5 7.5 0 1 1 20 11.5z"/><path d="M9 11.5h.01M12.5 11.5h.01M16 11.5h.01"/></svg></div>
+          <span class="cnum">03</span>
+          <div class="t serif ct" id="f-t3" data-layer="Title" data-kind="text" data-text="A quiet concierge" style="left:30px;top:122px;font-size:32px" data-m="left:84px;top:28px;font-size:25px"></div>
+          <div class="t cb" id="f-b3" data-layer="Body" data-kind="text" data-text="One human, on call all trip.|No apps to babysit, no|itinerary spam. Ever." style="left:30px;top:176px;font-size:15.5px;line-height:1.7" data-m="left:20px;top:82px;font-size:13.5px;line-height:1.6"></div>
+          <span class="more">Read more →</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 GALLERY ============ -->
+<section class="scene" id="gallery" style="--h:400vh">
+  <div class="stage">
+    <div class="canvas">
+      <div class="frame-label">Journeys — Desktop</div>
+      <div class="frame" id="gal-frame" data-layer="Journeys" data-kind="frame" style="left:40px;top:56px;width:1200px;height:700px;background:#1F2A24" data-m="left:12px;top:44px;width:376px;height:760px">
+        <div class="t serif" id="g-title" data-layer="Section title" data-kind="text" data-text="Places we keep|going _back_ to." style="left:78px;top:62px;font-size:68px;line-height:1;color:#F6F1E9" data-m="left:18px;top:24px;font-size:42px"></div>
+        <div class="t" id="g-side" data-layer="Intro" data-kind="text" data-text="Four journeys, hand-tested|by our team this year. Tap one." data-mtext="Four journeys, hand-tested this year. Tap one." style="left:820px;top:96px;font-size:17px;line-height:1.6;color:#A9B5AA" data-m="left:20px;top:122px;font-size:13.5px"></div>
+        <div class="slot" id="g-a" data-layer="lofoten.jpg" data-kind="image" data-x="open:trip:0" style="left:80px;top:250px;width:420px;height:400px;border-radius:20px" data-m="left:20px;top:160px;width:164px;height:272px;border-radius:16px">
+          <div class="img"><img src="img/coast.jpg" alt="Sea cliffs and turquoise water on a rugged northern coast"></div>
+          <div class="t cap" id="g-ca" data-layer="Caption" data-kind="text" data-text="Lofoten, Norway"></div></div>
+        <div class="slot" id="g-b" data-layer="hokkaido.jpg" data-kind="image" data-x="open:trip:1" style="left:520px;top:250px;width:300px;height:190px;border-radius:20px" data-m="left:192px;top:160px;width:164px;height:132px;border-radius:16px">
+          <div class="img"><img src="img/falls.jpg" alt="A waterfall pouring into a mossy green forest valley"></div>
+          <div class="t cap" id="g-cb" data-layer="Caption" data-kind="text" data-text="Hokkaido, Japan"></div></div>
+        <div class="slot" id="g-c" data-layer="dolomites.jpg" data-kind="image" data-x="open:trip:2" style="left:520px;top:460px;width:300px;height:190px;border-radius:20px" data-m="left:192px;top:300px;width:164px;height:132px;border-radius:16px">
+          <div class="img"><img src="img/alps.jpg" alt="Green alpine slopes under a cloudy sky"></div>
+          <div class="t cap" id="g-cc" data-layer="Caption" data-kind="text" data-text="Dolomites, Italy"></div></div>
+        <div class="slot" id="g-d" data-layer="patagonia.jpg" data-kind="image" data-x="open:trip:3" style="left:840px;top:250px;width:280px;height:400px;border-radius:20px" data-m="left:20px;top:444px;width:336px;height:296px;border-radius:16px">
+          <div class="img"><img src="img/peaks.jpg" alt="A tent pitched in snow below jagged mountain peaks"></div>
+          <div class="t cap" id="g-cd" data-layer="Caption" data-kind="text" data-text="Patagonia, Chile"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 STORY ============ -->
+<section class="scene" id="story" style="--h:380vh">
+  <div class="stage">
+    <div class="canvas">
+      <div class="frame-label">Stories — Desktop</div>
+      <div class="frame" id="story-frame" data-layer="Stories" data-kind="frame" style="left:40px;top:56px;width:1200px;height:700px;background:#EFE6D8" data-m="left:12px;top:44px;width:376px;height:760px">
+        <div class="t" id="s-eye" data-layer="Eyebrow" data-kind="text" data-text="FROM THE FIELD" style="left:80px;top:72px;font-size:13px;font-weight:600;letter-spacing:.18em;color:#D2693C" data-m="left:20px;top:24px;font-size:11px"></div>
+        <div class="t serif" id="s-quote" data-layer="Quote" data-kind="text" data-text="“We came home slower,|quieter — and somehow|more like _ourselves._”" style="left:76px;top:104px;font-size:56px;line-height:1.06;color:#1F2A24" data-m="left:18px;top:244px;font-size:33px"></div>
+        <div class="avatar" id="s-av" data-layer="Avatar" data-kind="ellipse" style="left:80px;top:318px" data-m="left:20px;top:370px;width:48px;height:48px;font-size:15px">AO</div>
+        <div class="t" id="s-name" data-layer="Name" data-kind="text" data-text="Amara Okafor" style="left:154px;top:322px;font-size:17px;font-weight:600;color:#1F2A24" data-m="left:80px;top:372px;font-size:15px"></div>
+        <div class="t" id="s-meta" data-layer="Trip" data-kind="text" data-text="Lofoten in winter · 9 nights" style="left:154px;top:350px;font-size:14px;color:#6B746D" data-m="left:80px;top:396px;font-size:12.5px"></div>
+        <div class="arrow" id="s-prev" data-layer="Button / Prev" data-kind="ellipse" data-x="quote:-1" aria-label="Previous story" style="left:560px;top:325px" data-m="left:264px;top:374px;width:40px;height:40px">←</div>
+        <div class="arrow" id="s-next" data-layer="Button / Next" data-kind="ellipse" data-x="quote:1" aria-label="Next story" style="left:614px;top:325px" data-m="left:314px;top:374px;width:40px;height:40px">→</div>
+        <div class="slot" id="s-photo" data-layer="traveller.jpg" data-kind="image" style="left:760px;top:60px;width:360px;height:360px;border-radius:50%" data-m="left:98px;top:50px;width:180px;height:180px">
+          <div class="img"><img src="img/hiker.jpg" alt="A hiker with a backpack looking over a misty valley at sunrise"></div>
+        </div>
+        <div class="line" id="s-line" data-layer="Divider" data-kind="rect" style="left:80px;top:470px;width:1040px;height:1px;background:#CDBFA9" data-m="left:20px;top:440px;width:336px"></div>
+        <div class="t serif num" id="s-n1" data-layer="Stat" data-kind="text" data-count="12400" data-suffix="+" style="left:78px;top:504px" data-m="left:20px;top:462px;font-size:46px"></div>
+        <div class="t serif num" id="s-n2" data-layer="Stat" data-kind="text" data-count="38" style="left:438px;top:504px" data-m="left:20px;top:556px;font-size:46px"></div>
+        <div class="t serif num" id="s-n3" data-layer="Stat" data-kind="text" data-count="4.9" data-dec="1" data-suffix="/5" style="left:798px;top:504px" data-m="left:20px;top:650px;font-size:46px"></div>
+        <div class="t slab" id="s-l1" data-layer="Stat label" data-kind="text" data-text="slow travellers since 2019" data-mtext="slow travellers|since 2019" style="left:80px;top:590px" data-m="left:196px;top:470px;font-size:13px"></div>
+        <div class="t slab" id="s-l2" data-layer="Stat label" data-kind="text" data-text="routes, all walked by us" data-mtext="routes, all|walked by us" style="left:440px;top:590px" data-m="left:196px;top:564px;font-size:13px"></div>
+        <div class="t slab" id="s-l3" data-layer="Stat label" data-kind="text" data-text="average trip rating" data-mtext="average|trip rating" style="left:800px;top:590px" data-m="left:196px;top:658px;font-size:13px"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 LAUNCH ============ -->
+<section class="scene" id="launch" style="--h:420vh">
+  <div class="stage">
+    <div class="canvas">
+      <div class="pub" id="l-pub" data-x="confetti"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M6 4l14 8-14 8z" fill="currentColor"/></svg><span class="pa">Publish</span><span class="pb">Published</span></div>
+      <div class="frame-label">Newsletter + Footer — Desktop <span class="live">● Live</span></div>
+      <div class="frame" id="launch-frame" data-layer="Newsletter + Footer" data-kind="frame" style="left:40px;top:56px;width:1200px;height:700px;background:linear-gradient(160deg,#DA7A4C,#BF5430)" data-m="left:12px;top:44px;width:376px;height:760px">
+        <div class="t serif" id="l-title" data-layer="Headline" data-kind="text" data-text="Your next trip|should feel|like _this._" style="left:76px;top:66px;font-size:88px;line-height:.95;color:#FFF6EC" data-m="left:18px;top:24px;font-size:52px"></div>
+        <div class="t" id="l-para" data-layer="Copy" data-kind="text" data-text="One quiet letter a month. New routes,|first dibs on cabins, and zero noise." style="left:80px;top:342px;font-size:17px;line-height:1.6;color:#FBE3D2" data-m="left:20px;top:182px;font-size:13.5px"></div>
+        <div class="input" id="l-input" data-layer="Input / Email" data-kind="rect" style="left:80px;top:430px;width:400px;height:60px" data-m="left:20px;top:246px;width:336px;height:52px">
+          <div class="t" id="l-ph" data-layer="Placeholder" data-kind="text" data-text="you@somewhere.quiet" style="left:26px;top:18px;font-size:16px;color:rgba(255,255,255,.78)" data-m="left:22px;top:15px;font-size:15px"></div>
+          <input class="real" id="l-email" type="email" autocomplete="email" aria-label="Email address" tabindex="-1">
+        </div>
+        <div class="rect btn" id="l-sub" data-layer="Button / Subscribe" data-kind="rect" data-x="subscribe" style="left:492px;top:430px;width:160px;height:60px;border-radius:30px" data-m="left:20px;top:308px;width:336px;height:52px;border-radius:26px">
+          <i class="fill" style="background:#1F2A24"></i>
+          <div class="t lbl" id="l-sub-t" data-layer="Label" data-kind="text" data-text="Subscribe" style="font-size:15px;font-weight:600;color:#FFF6EC"></div>
+        </div>
+        <div class="l-err" id="l-err" role="alert"></div>
+        <div class="l-ok" id="l-ok" role="status"><b>You’re on the list ✓</b><span>The first letter lands next month. No noise, promise.</span></div>
+        <div class="slot" id="l-img" data-layer="desert-road.jpg" data-kind="image" data-x="open:film" style="left:760px;top:64px;width:360px;height:426px;border-radius:24px" data-m="left:20px;top:378px;width:336px;height:220px;border-radius:18px">
+          <div class="img"><img src="img/road.jpg" alt="A van driving down a dusty road into a golden sunset"></div>
+        </div>
+        <div class="line" id="l-line" data-layer="Divider" data-kind="rect" style="left:80px;top:560px;width:1040px;height:1px;background:rgba(255,255,255,.4)" data-m="left:20px;top:620px;width:336px"></div>
+        <div class="t serif" id="l-flogo" data-layer="Logo" data-kind="text" data-x="go:hero" data-text="driftwood." style="left:80px;top:592px;font-size:30px;color:#FFF6EC" data-m="left:20px;top:636px;font-size:26px"></div>
+        <div class="t" id="l-links" data-layer="Footer links" data-kind="text" data-text="[Journeys](go:gallery)     [Stories](go:story)     [Careers](open:info:careers)     [Contact](open:info:contact)" data-mtext="[Journeys](go:gallery)    [Stories](go:story)    [Careers](open:info:careers)    [Contact](open:info:contact)" style="left:400px;top:604px;font-size:14px;color:rgba(255,246,236,.85)" data-m="left:20px;top:684px;font-size:12.5px"></div>
+        <div class="t" id="l-copy" data-layer="Copyright" data-kind="text" data-text="© 2026 Driftwood Travel Co." style="left:924px;top:605px;font-size:13px;color:rgba(255,246,236,.7)" data-m="left:20px;top:716px;font-size:11.5px"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OUTRO ============ -->
+<section class="outro" id="outro">
+  <div class="outro-in">
+    <p class="kicker">That’s a wrap</p>
+    <h2>Five frames. Four cursors.<br>One working website.</h2>
+    <p class="small">Every rectangle, word and photo above was placed live — and then it all started working. Scroll back up to try the buttons, or rewind the whole build.</p>
+    <button id="replay" type="button">↺ Rewind &amp; watch it again</button>
+  </div>
+</section>
+
+<!-- ============ MODAL ============ -->
+<div class="modal" id="modal" hidden>
+  <div class="m-back" data-close></div>
+  <div class="m-panel" role="dialog" aria-modal="true" aria-labelledby="m-title" tabindex="-1">
+    <button class="m-x" type="button" data-close aria-label="Close">×</button>
+    <div class="m-body" id="m-body"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
